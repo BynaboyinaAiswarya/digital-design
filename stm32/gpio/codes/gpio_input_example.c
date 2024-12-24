@@ -1,42 +1,26 @@
 /*
-GVV Sharma, August 20, 2018
-Code released under GNU GPL
-*/
-
-/*
- * Turn LED ON/OFF
+ * GVV Sharma, August 20, 2018
+ * Code released under GNU GPL
+ * 
+ * Turn LED ON/OFF using a button
  */
-#include "stm32f103xb.h"	
+#include<Arduino.h>
+#define LED_PIN PB4  // LED connected to PB4
+#define BUTTON_PIN PB7 // Button connected to PB7
 
-#define B7             0x0080                     // PB7 
+void setup() {
+  // Enable LED_PIN as output
+  pinMode(LED_PIN, OUTPUT);
+  
+  // Enable BUTTON_PIN as input
+  pinMode(BUTTON_PIN, INPUT_PULLUP); // Using pull-up resistor for the button
+}
 
-int main()
-{
-	/*
-	 * Enable all Ports and Alternate Function clocks
-	 */
-	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPBEN |
-	    RCC_APB2ENR_IOPCEN | RCC_APB2ENR_IOPDEN | RCC_APB2ENR_AFIOEN;
-	
-	/*
-	 * Disable JTAG and SWO (Free PB3, PB4 and PA15)
-	 */
-	AFIO->MAPR = AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
-
-	/*
-	 * Enable the PB4 as a digital output and PB7 as input
-	 */
-	GPIOB->CRL = 0x80030000;	
-
-	/*
-	 * Infinite loop
-	 */
-	while(1)
-	{
-		if (((GPIOB->IDR & B7) == 0 ))  
-			GPIOB->BRR = (1<<4); //PB4 = 0 (Led ON)		
-		else
-			GPIOB->BSRR = (1<<4); //PB4 = 1 (Led OFF)					
-
-	}
+void loop() {
+  // Check if button is pressed (LOW state)
+  if (digitalRead(BUTTON_PIN) == LOW) {
+    digitalWrite(LED_PIN, LOW); // Turn LED ON
+  } else {
+    digitalWrite(LED_PIN, HIGH); // Turn LED OFF
+  }
 }
